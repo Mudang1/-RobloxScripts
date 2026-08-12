@@ -1,30 +1,42 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
+-- =========================================================
 -- ลบ UI เก่า
+-- =========================================================
+
 local OldGui = PlayerGui:FindFirstChild("RagdollMenu")
 if OldGui then
     OldGui:Destroy()
 end
 
 -- =========================================================
--- CONFIG
+-- SETTINGS
 -- =========================================================
 
-local UI_WIDTH = 250
-local OPEN_HEIGHT = 300
-local CLOSED_HEIGHT = 68
+local WIDTH = 270
+local OPEN_HEIGHT = 310
+local MINI_HEIGHT = 64
 
-local BG = Color3.fromRGB(13, 14, 18)
-local PANEL = Color3.fromRGB(20, 21, 27)
-local BUTTON = Color3.fromRGB(27, 29, 36)
-local BUTTON_HOVER = Color3.fromRGB(35, 37, 46)
-local TEXT = Color3.fromRGB(245, 245, 250)
-local SUBTEXT = Color3.fromRGB(135, 138, 150)
+local C = {
+    BG = Color3.fromRGB(11, 12, 17),
+    HEADER = Color3.fromRGB(21, 23, 31),
+    CARD = Color3.fromRGB(27, 29, 38),
+    HOVER = Color3.fromRGB(39, 42, 53),
+
+    WHITE = Color3.fromRGB(245, 246, 250),
+    GRAY = Color3.fromRGB(145, 148, 160),
+
+    RED = Color3.fromRGB(238, 75, 88),
+    ORANGE = Color3.fromRGB(245, 145, 55),
+    GREEN = Color3.fromRGB(65, 215, 120),
+    PURPLE = Color3.fromRGB(155, 95, 255)
+}
 
 -- =========================================================
 -- SCREEN GUI
@@ -33,226 +45,165 @@ local SUBTEXT = Color3.fromRGB(135, 138, 150)
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "RagdollMenu"
 ScreenGui.ResetOnSpawn = false
+ScreenGui.IgnoreGuiInset = true
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.Parent = PlayerGui
 
 -- =========================================================
--- MAIN FRAME
+-- MAIN WINDOW
 -- =========================================================
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.fromOffset(UI_WIDTH, OPEN_HEIGHT)
-MainFrame.Position = UDim2.new(0.06, 0, 0.18, 0)
-MainFrame.BackgroundColor3 = BG
-MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
-MainFrame.Draggable = true
-MainFrame.ClipsDescendants = false
-MainFrame.Parent = ScreenGui
+local Main = Instance.new("Frame")
+Main.Name = "Main"
+Main.Size = UDim2.fromOffset(WIDTH, OPEN_HEIGHT)
+Main.Position = UDim2.new(0.5, -WIDTH / 2, 0.5, -OPEN_HEIGHT / 2)
+Main.BackgroundColor3 = C.BG
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 16)
-MainCorner.Parent = MainFrame
+MainCorner.CornerRadius = UDim.new(0, 18)
+MainCorner.Parent = Main
 
--- =========================================================
--- SHADOW
--- =========================================================
-
-local Shadow = Instance.new("ImageLabel")
-Shadow.Name = "Shadow"
-Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-Shadow.Position = UDim2.new(0.5, 0, 0.5, 7)
-Shadow.Size = UDim2.new(1, 35, 1, 35)
-Shadow.BackgroundTransparency = 1
-Shadow.Image = "rbxassetid://1316045217"
-Shadow.ImageTransparency = 0.45
-Shadow.ScaleType = Enum.ScaleType.Slice
-Shadow.SliceCenter = Rect.new(10, 10, 118, 118)
-Shadow.ZIndex = 0
-Shadow.Parent = MainFrame
-
--- =========================================================
--- BORDER
--- =========================================================
-
-local Border = Instance.new("UIStroke")
-Border.Color = Color3.fromRGB(48, 50, 62)
-Border.Thickness = 1
-Border.Transparency = 0.25
-Border.Parent = MainFrame
+local MainStroke = Instance.new("UIStroke")
+MainStroke.Color = Color3.fromRGB(55, 58, 72)
+MainStroke.Thickness = 1
+MainStroke.Transparency = 0.15
+MainStroke.Parent = Main
 
 -- =========================================================
 -- HEADER
 -- =========================================================
 
 local Header = Instance.new("Frame")
-Header.Name = "Header"
-Header.Size = UDim2.new(1, 0, 0, 68)
-Header.BackgroundColor3 = PANEL
+Header.Size = UDim2.new(1, 0, 0, 64)
+Header.BackgroundColor3 = C.HEADER
 Header.BorderSizePixel = 0
-Header.ZIndex = 2
-Header.Parent = MainFrame
+Header.Parent = Main
 
 local HeaderCorner = Instance.new("UICorner")
-HeaderCorner.CornerRadius = UDim.new(0, 16)
+HeaderCorner.CornerRadius = UDim.new(0, 18)
 HeaderCorner.Parent = Header
 
--- ปิดส่วนโค้งด้านล่าง
 local HeaderBottom = Instance.new("Frame")
 HeaderBottom.Size = UDim2.new(1, 0, 0, 18)
 HeaderBottom.Position = UDim2.new(0, 0, 1, -18)
-HeaderBottom.BackgroundColor3 = PANEL
+HeaderBottom.BackgroundColor3 = C.HEADER
 HeaderBottom.BorderSizePixel = 0
-HeaderBottom.ZIndex = 2
 HeaderBottom.Parent = Header
 
 -- =========================================================
--- ICON
+-- LOGO
 -- =========================================================
 
-local Icon = Instance.new("Frame")
-Icon.Size = UDim2.fromOffset(44, 44)
-Icon.Position = UDim2.fromOffset(12, 12)
-Icon.BackgroundColor3 = Color3.fromRGB(35, 37, 47)
-Icon.BorderSizePixel = 0
-Icon.ZIndex = 3
-Icon.Parent = Header
+local Logo = Instance.new("TextLabel")
+Logo.Size = UDim2.fromOffset(42, 42)
+Logo.Position = UDim2.fromOffset(11, 11)
+Logo.BackgroundColor3 = C.PURPLE
+Logo.Text = "R"
+Logo.TextColor3 = Color3.new(1, 1, 1)
+Logo.TextSize = 21
+Logo.Font = Enum.Font.GothamBold
+Logo.Parent = Header
 
-local IconCorner = Instance.new("UICorner")
-IconCorner.CornerRadius = UDim.new(0, 12)
-IconCorner.Parent = Icon
-
-local IconStroke = Instance.new("UIStroke")
-IconStroke.Color = Color3.fromRGB(75, 78, 95)
-IconStroke.Transparency = 0.25
-IconStroke.Parent = Icon
-
-local IconText = Instance.new("TextLabel")
-IconText.Size = UDim2.fromScale(1, 1)
-IconText.BackgroundTransparency = 1
-IconText.Text = "R"
-IconText.TextColor3 = Color3.fromRGB(255, 255, 255)
-IconText.TextSize = 22
-IconText.Font = Enum.Font.GothamBold
-IconText.ZIndex = 4
-IconText.Parent = Icon
+local LogoCorner = Instance.new("UICorner")
+LogoCorner.CornerRadius = UDim.new(0, 12)
+LogoCorner.Parent = Logo
 
 -- =========================================================
 -- TITLE
 -- =========================================================
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -115, 0, 24)
-Title.Position = UDim2.fromOffset(66, 11)
+Title.Size = UDim2.new(1, -145, 0, 23)
+Title.Position = UDim2.fromOffset(63, 8)
 Title.BackgroundTransparency = 1
-Title.Text = "Ragdoll Menu"
-Title.TextColor3 = TEXT
+Title.Text = "RAGDOLL"
+Title.TextColor3 = C.WHITE
 Title.TextSize = 17
 Title.Font = Enum.Font.GothamBold
 Title.TextXAlignment = Enum.TextXAlignment.Left
-Title.ZIndex = 3
 Title.Parent = Header
 
 local Subtitle = Instance.new("TextLabel")
-Subtitle.Size = UDim2.new(1, -115, 0, 18)
-Subtitle.Position = UDim2.fromOffset(66, 34)
+Subtitle.Size = UDim2.new(1, -145, 0, 18)
+Subtitle.Position = UDim2.fromOffset(63, 32)
 Subtitle.BackgroundTransparency = 1
-Subtitle.Text = "Control Panel"
-Subtitle.TextColor3 = SUBTEXT
-Subtitle.TextSize = 10
+Subtitle.Text = "CONTROL PANEL"
+Subtitle.TextColor3 = C.GRAY
+Subtitle.TextSize = 9
 Subtitle.Font = Enum.Font.Gotham
 Subtitle.TextXAlignment = Enum.TextXAlignment.Left
-Subtitle.ZIndex = 3
 Subtitle.Parent = Header
 
 -- =========================================================
--- STATUS
+-- MINIMIZE
 -- =========================================================
 
-local Status = Instance.new("Frame")
-Status.Size = UDim2.fromOffset(52, 22)
-Status.Position = UDim2.new(1, -95, 0, 8)
-Status.BackgroundColor3 = Color3.fromRGB(25, 55, 38)
-Status.BorderSizePixel = 0
-Status.ZIndex = 4
-Status.Parent = Header
+local MinButton = Instance.new("TextButton")
+MinButton.Size = UDim2.fromOffset(30, 30)
+MinButton.Position = UDim2.new(1, -72, 0, 17)
+MinButton.BackgroundColor3 = Color3.fromRGB(42, 44, 55)
+MinButton.Text = "—"
+MinButton.TextColor3 = C.WHITE
+MinButton.TextSize = 17
+MinButton.Font = Enum.Font.GothamBold
+MinButton.AutoButtonColor = false
+MinButton.Parent = Header
 
-local StatusCorner = Instance.new("UICorner")
-StatusCorner.CornerRadius = UDim.new(1, 0)
-StatusCorner.Parent = Status
-
-local StatusDot = Instance.new("Frame")
-StatusDot.Size = UDim2.fromOffset(6, 6)
-StatusDot.Position = UDim2.new(0, 8, 0.5, -3)
-StatusDot.BackgroundColor3 = Color3.fromRGB(70, 220, 120)
-StatusDot.BorderSizePixel = 0
-Status.ZIndex = 5
-Status.Parent = Status
-
-local DotCorner = Instance.new("UICorner")
-DotCorner.CornerRadius = UDim.new(1, 0)
-DotCorner.Parent = StatusDot
-
-local StatusText = Instance.new("TextLabel")
-StatusText.Size = UDim2.new(1, -18, 1, 0)
-StatusText.Position = UDim2.fromOffset(18, 0)
-StatusText.BackgroundTransparency = 1
-StatusText.Text = "READY"
-StatusText.TextColor3 = Color3.fromRGB(100, 230, 145)
-StatusText.TextSize = 8
-StatusText.Font = Enum.Font.GothamBold
-StatusText.ZIndex = 5
-StatusText.Parent = Status
+local MinCorner = Instance.new("UICorner")
+MinCorner.CornerRadius = UDim.new(0, 9)
+MinCorner.Parent = MinButton
 
 -- =========================================================
--- COLLAPSE BUTTON
+-- CLOSE
 -- =========================================================
 
-local ToggleButton = Instance.new("TextButton")
-ToggleButton.Size = UDim2.fromOffset(30, 30)
-ToggleButton.Position = UDim2.new(1, -40, 0, 30)
-ToggleButton.BackgroundColor3 = Color3.fromRGB(35, 37, 47)
-ToggleButton.Text = "⌃"
-ToggleButton.TextColor3 = TEXT
-ToggleButton.TextSize = 17
-ToggleButton.Font = Enum.Font.GothamBold
-ToggleButton.AutoButtonColor = false
-ToggleButton.ZIndex = 5
-ToggleButton.Parent = Header
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.fromOffset(30, 30)
+CloseButton.Position = UDim2.new(1, -37, 0, 17)
+CloseButton.BackgroundColor3 = Color3.fromRGB(55, 32, 38)
+CloseButton.Text = "×"
+CloseButton.TextColor3 = C.RED
+CloseButton.TextSize = 20
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.AutoButtonColor = false
+CloseButton.Parent = Header
 
-local ToggleCorner = Instance.new("UICorner")
-ToggleCorner.CornerRadius = UDim.new(0, 9)
-ToggleCorner.Parent = ToggleButton
-
--- =========================================================
--- HEADER LINE
--- =========================================================
-
-local HeaderLine = Instance.new("Frame")
-HeaderLine.Size = UDim2.new(1, -24, 0, 1)
-HeaderLine.Position = UDim2.new(0, 12, 1, 0)
-HeaderLine.BackgroundColor3 = Color3.fromRGB(48, 50, 62)
-HeaderLine.BorderSizePixel = 0
-HeaderLine.ZIndex = 5
-HeaderLine.Parent = Header
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 9)
+CloseCorner.Parent = CloseButton
 
 -- =========================================================
--- CONTAINER
+-- CONTENT
 -- =========================================================
 
-local Container = Instance.new("Frame")
-Container.Name = "Container"
-Container.Size = UDim2.new(1, -24, 1, -82)
-Container.Position = UDim2.fromOffset(12, 78)
-Container.BackgroundTransparency = 1
-Container.Parent = MainFrame
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -20, 1, -76)
+Content.Position = UDim2.fromOffset(10, 72)
+Content.BackgroundTransparency = 1
+Content.Parent = Main
 
 local Layout = Instance.new("UIListLayout")
 Layout.Padding = UDim.new(0, 9)
 Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 Layout.SortOrder = Enum.SortOrder.LayoutOrder
-Layout.Parent = Container
+Layout.Parent = Content
+
+-- =========================================================
+-- SECTION TITLE
+-- =========================================================
+
+local Section = Instance.new("TextLabel")
+Section.Size = UDim2.new(1, -8, 0, 20)
+Section.BackgroundTransparency = 1
+Section.Text = "RAGDOLL CONTROL"
+Section.TextColor3 = C.GRAY
+Section.TextSize = 9
+Section.Font = Enum.Font.GothamBold
+Section.TextXAlignment = Enum.TextXAlignment.Left
+Section.Parent = Content
 
 -- =========================================================
 -- RAGDOLL EVENT
@@ -262,98 +213,95 @@ local RagdollEvent =
     ReplicatedStorage.Library.Modules.Ragdoll.Ragdoll
 
 -- =========================================================
--- BUTTON FUNCTION
+-- CREATE BUTTON
 -- =========================================================
 
-local function createButton(text, description, color, callback)
+local function CreateButton(title, description, icon, color, callback)
 
     local Button = Instance.new("TextButton")
-    Button.Name = text
-    Button.Size = UDim2.new(1, 0, 0, 58)
-    Button.BackgroundColor3 = BUTTON
+    Button.Size = UDim2.new(1, -4, 0, 66)
+    Button.BackgroundColor3 = C.CARD
     Button.BorderSizePixel = 0
     Button.Text = ""
     Button.AutoButtonColor = false
-    Button.ZIndex = 2
-    Button.Parent = Container
+    Button.Parent = Content
 
     local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 12)
+    Corner.CornerRadius = UDim.new(0, 13)
     Corner.Parent = Button
 
     local Stroke = Instance.new("UIStroke")
-    Stroke.Color = Color3.fromRGB(48, 50, 62)
-    Stroke.Transparency = 0.35
+    Stroke.Color = Color3.fromRGB(55, 58, 70)
+    Stroke.Transparency = 0.3
     Stroke.Thickness = 1
     Stroke.Parent = Button
 
-    -- Accent
-    local Accent = Instance.new("Frame")
-    Accent.Size = UDim2.fromOffset(4, 34)
-    Accent.Position = UDim2.fromOffset(8, 12)
-    Accent.BackgroundColor3 = color
-    Accent.BorderSizePixel = 0
-    Accent.ZIndex = 3
-    Accent.Parent = Button
+    -- Icon
+    local Icon = Instance.new("TextLabel")
+    Icon.Size = UDim2.fromOffset(42, 42)
+    Icon.Position = UDim2.fromOffset(11, 12)
+    Icon.BackgroundColor3 = color
+    Icon.Text = icon
+    Icon.TextColor3 = Color3.new(1, 1, 1)
+    Icon.TextSize = 19
+    Icon.Font = Enum.Font.GothamBold
+    Icon.Parent = Button
 
-    local AccentCorner = Instance.new("UICorner")
-    AccentCorner.CornerRadius = UDim.new(1, 0)
-    AccentCorner.Parent = Accent
+    local IconCorner = Instance.new("UICorner")
+    IconCorner.CornerRadius = UDim.new(0, 12)
+    IconCorner.Parent = Icon
 
     -- Title
     local ButtonTitle = Instance.new("TextLabel")
-    ButtonTitle.Size = UDim2.new(1, -65, 0, 22)
-    ButtonTitle.Position = UDim2.fromOffset(22, 7)
+    ButtonTitle.Size = UDim2.new(1, -105, 0, 22)
+    ButtonTitle.Position = UDim2.fromOffset(63, 10)
     ButtonTitle.BackgroundTransparency = 1
-    ButtonTitle.Text = text
-    ButtonTitle.TextColor3 = TEXT
+    ButtonTitle.Text = title
+    ButtonTitle.TextColor3 = C.WHITE
     ButtonTitle.TextSize = 14
     ButtonTitle.Font = Enum.Font.GothamBold
     ButtonTitle.TextXAlignment = Enum.TextXAlignment.Left
-    ButtonTitle.ZIndex = 4
     ButtonTitle.Parent = Button
 
     -- Description
     local Desc = Instance.new("TextLabel")
-    Desc.Size = UDim2.new(1, -65, 0, 16)
-    Desc.Position = UDim2.fromOffset(22, 30)
+    Desc.Size = UDim2.new(1, -105, 0, 18)
+    Desc.Position = UDim2.fromOffset(63, 33)
     Desc.BackgroundTransparency = 1
     Desc.Text = description
-    Desc.TextColor3 = SUBTEXT
+    Desc.TextColor3 = C.GRAY
     Desc.TextSize = 9
     Desc.Font = Enum.Font.Gotham
     Desc.TextXAlignment = Enum.TextXAlignment.Left
-    Desc.ZIndex = 4
     Desc.Parent = Button
 
     -- Arrow
     local Arrow = Instance.new("TextLabel")
-    Arrow.Size = UDim2.fromOffset(28, 28)
-    Arrow.Position = UDim2.new(1, -38, 0.5, -14)
+    Arrow.Size = UDim2.fromOffset(25, 25)
+    Arrow.Position = UDim2.new(1, -36, 0.5, -12)
     Arrow.BackgroundTransparency = 1
     Arrow.Text = "›"
     Arrow.TextColor3 = color
-    Arrow.TextSize = 24
+    Arrow.TextSize = 25
     Arrow.Font = Enum.Font.GothamBold
-    Arrow.ZIndex = 4
     Arrow.Parent = Button
 
-    -- Hover animation
+    -- Hover
     Button.MouseEnter:Connect(function()
 
         TweenService:Create(
             Button,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+            TweenInfo.new(0.15),
             {
-                BackgroundColor3 = BUTTON_HOVER
+                BackgroundColor3 = C.HOVER
             }
         ):Play()
 
         TweenService:Create(
             Arrow,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+            TweenInfo.new(0.15),
             {
-                Position = UDim2.new(1, -34, 0.5, -14)
+                Position = UDim2.new(1, -31, 0.5, -12)
             }
         ):Play()
 
@@ -363,47 +311,23 @@ local function createButton(text, description, color, callback)
 
         TweenService:Create(
             Button,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+            TweenInfo.new(0.15),
             {
-                BackgroundColor3 = BUTTON
+                BackgroundColor3 = C.CARD
             }
         ):Play()
 
         TweenService:Create(
             Arrow,
-            TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+            TweenInfo.new(0.15),
             {
-                Position = UDim2.new(1, -38, 0.5, -14)
+                Position = UDim2.new(1, -36, 0.5, -12)
             }
         ):Play()
 
     end)
 
-    -- Click animation
-    Button.MouseButton1Down:Connect(function()
-
-        TweenService:Create(
-            Button,
-            TweenInfo.new(0.08),
-            {
-                Size = UDim2.new(1, -4, 0, 56)
-            }
-        ):Play()
-
-    end)
-
-    Button.MouseButton1Up:Connect(function()
-
-        TweenService:Create(
-            Button,
-            TweenInfo.new(0.08),
-            {
-                Size = UDim2.new(1, 0, 0, 58)
-            }
-        ):Play()
-
-    end)
-
+    -- Click
     Button.MouseButton1Click:Connect(function()
         pcall(callback)
     end)
@@ -415,11 +339,11 @@ end
 -- BACK
 -- =========================================================
 
-createButton(
-    "Back",
+CreateButton(
+    "BACK",
     "Activate ragdoll backward",
-    Color3.fromRGB(240, 75, 85),
-
+    "←",
+    C.RED,
     function()
 
         firesignal(
@@ -440,11 +364,11 @@ createButton(
 -- FRONT
 -- =========================================================
 
-createButton(
-    "Front",
+CreateButton(
+    "FRONT",
     "Activate ragdoll forward",
-    Color3.fromRGB(245, 145, 55),
-
+    "→",
+    C.ORANGE,
     function()
 
         firesignal(
@@ -465,11 +389,11 @@ createButton(
 -- UP
 -- =========================================================
 
-createButton(
-    "Up",
+CreateButton(
+    "UP",
     "Remove ragdoll effect",
-    Color3.fromRGB(70, 215, 120),
-
+    "↑",
+    C.GREEN,
     function()
 
         firesignal(
@@ -482,72 +406,128 @@ createButton(
 )
 
 -- =========================================================
--- COLLAPSE
+-- MINIMIZE / RESTORE
 -- =========================================================
 
-local collapsed = false
+local Minimized = false
 
-ToggleButton.MouseEnter:Connect(function()
+MinButton.MouseButton1Click:Connect(function()
 
-    TweenService:Create(
-        ToggleButton,
-        TweenInfo.new(0.15),
-        {
-            BackgroundColor3 = Color3.fromRGB(50, 52, 64)
-        }
-    ):Play()
+    Minimized = not Minimized
 
-end)
+    if Minimized then
 
-ToggleButton.MouseLeave:Connect(function()
-
-    TweenService:Create(
-        ToggleButton,
-        TweenInfo.new(0.15),
-        {
-            BackgroundColor3 = Color3.fromRGB(35, 37, 47)
-        }
-    ):Play()
-
-end)
-
-ToggleButton.MouseButton1Click:Connect(function()
-
-    collapsed = not collapsed
-
-    if collapsed then
-
-        Container.Visible = false
-        ToggleButton.Text = "⌄"
+        Content.Visible = false
+        MinButton.Text = "+"
 
         TweenService:Create(
-            MainFrame,
+            Main,
             TweenInfo.new(
-                0.28,
+                0.25,
                 Enum.EasingStyle.Quart,
                 Enum.EasingDirection.Out
             ),
             {
-                Size = UDim2.fromOffset(UI_WIDTH, CLOSED_HEIGHT)
+                Size = UDim2.fromOffset(WIDTH, MINI_HEIGHT)
             }
         ):Play()
 
     else
 
-        Container.Visible = true
-        ToggleButton.Text = "⌃"
+        MinButton.Text = "—"
 
         TweenService:Create(
-            MainFrame,
+            Main,
             TweenInfo.new(
-                0.28,
+                0.25,
                 Enum.EasingStyle.Quart,
                 Enum.EasingDirection.Out
             ),
             {
-                Size = UDim2.fromOffset(UI_WIDTH, OPEN_HEIGHT)
+                Size = UDim2.fromOffset(WIDTH, OPEN_HEIGHT)
             }
         ):Play()
+
+        task.delay(0.12, function()
+            Content.Visible = true
+        end)
+
+    end
+
+end)
+
+-- =========================================================
+-- CLOSE
+-- =========================================================
+
+CloseButton.MouseButton1Click:Connect(function()
+
+    local Animation = TweenService:Create(
+        Main,
+        TweenInfo.new(
+            0.2,
+            Enum.EasingStyle.Back,
+            Enum.EasingDirection.In
+        ),
+        {
+            Size = UDim2.fromOffset(0, 0)
+        }
+    )
+
+    Animation:Play()
+    Animation.Completed:Wait()
+
+    ScreenGui:Destroy()
+
+end)
+
+-- =========================================================
+-- DRAG SYSTEM
+-- รองรับ PC + มือถือ
+-- =========================================================
+
+local Dragging = false
+local DragStart
+local StartPosition
+
+Header.InputBegan:Connect(function(Input)
+
+    if Input.UserInputType == Enum.UserInputType.MouseButton1
+        or Input.UserInputType == Enum.UserInputType.Touch then
+
+        Dragging = true
+        DragStart = Input.Position
+        StartPosition = Main.Position
+
+        Input.Changed:Connect(function()
+
+            if Input.UserInputState == Enum.UserInputState.End then
+                Dragging = false
+            end
+
+        end)
+
+    end
+
+end)
+
+UserInputService.InputChanged:Connect(function(Input)
+
+    if not Dragging then
+        return
+    end
+
+    if Input.UserInputType == Enum.UserInputType.MouseMovement
+        or Input.UserInputType == Enum.UserInputType.Touch then
+
+        local Delta = Input.Position - DragStart
+
+        Main.Position = UDim2.new(
+            StartPosition.X.Scale,
+            StartPosition.X.Offset + Delta.X,
+            StartPosition.Y.Scale,
+            StartPosition.Y.Offset + Delta.Y
+        )
 
     end
 
